@@ -20,12 +20,40 @@ class Attendance_API:
 			flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
 			creds = tools.run_flow(flow, store)
 		self.service = build('sheets', 'v4', http=creds.authorize(Http()))
+
+		#also need the sheetID, which relies on the current quarter
 		self.SPREADSHEET_ID = '1pi9vYiuaffClEK2TrIwg1N-HtcL4uU-S9nP8RcJ1IqM'
+		
+		self.quarter = self.get_current_quarter()
+		import pdb; pdb.set_trace()
+		sheet_metadata = self.service.spreadsheets().get(spreadsheetId=self.SPREADSHEET_ID).execute()
+		
+		sheets = sheet_metadata.get('sheets', '')
+		title = sheets[0].get("properties", {}).get("title", "Sheet1")
+		sheet_id = sheets[0].get("properties", {}).get("sheetId", 0)
+	#	attendance = self.service.spreadsheets().values().get(spreadsheetId=self.SPREADSHEET_ID, majorDimension='COLUMNS',range='C1:AA').execute()
+
+
+
+	def get_current_quarter(self):
+		date = datetime.now()
+		quarter = ""
+		if date.month >= 9:
+			quarter = "Fall "
+		elif date.month <= 3:
+			quarter = "Winter "
+		elif 4 <= date.month <= 7:
+			quarter = "Spring "
+		else:
+			print("error, current date is in summer")
+			quarter = "ERROR "
+
+		return quarter + str(date.year)
 
 
 #returns the exact string to match the column of the meeting today
 #used to easily grab column of the day
-	def get_today_string(self, date=None):
+	def get_today_string(self, date=None):		
 		if date:
 			return 'Meeting - ' + date
 		else:
@@ -37,12 +65,14 @@ class Attendance_API:
 	def get_today_column(self, attendance, prev_date):
 		for date in attendance['values']:
 			if date[0] == self.get_today_string(prev_date):
-				date.remove('')		#the 'pledges' row has a blank in this space, want it to match up with the members tuple
+				#import pdb;pdb.set_trace()
+				#should probably make every cell an object
+				#date.remove('')		#the 'pledges' row has a blank in this space, want it to match up with the members tuple
 				return date
 
 #returns list of tuples with first,last name of all current members
 	def build_member_tuple(self):
-		test = self.service.spreadsheets().values().get(spreadsheetId=self.SPREADSHEET_ID, majorDimension='ROWS',range='A2:B').execute()
+		test = self.service.spreadsheets().values().get(spreadsheetId=self.SPREADSHEET_ID, majorDimension='ROWS',range=self.quarter + '!A2:B').execute()
 		test['values'].remove(['Pledges'])	#all other entries in 'test' were 2d lists except this row in the spreadsheet. was causing issues
 		return [(first,last) for last,first in test['values'] if first[0] != 'Pledges']
 
@@ -51,10 +81,11 @@ class Attendance_API:
 #setting majorDimension as COLUMNS groups each meeting as a list, so no chance the order is disrupted, like in a dictionary
 #optionally passing a date of type string in day/month zero padded format grabs it for that day
 	def get_today_attendance(self, date=None):
-		attendance = self.service.spreadsheets().values().get(spreadsheetId=self.SPREADSHEET_ID, majorDimension='COLUMNS',range='C1:AA').execute()
+		attendance = self.service.spreadsheets().values().get(spreadsheetId=self.SPREADSHEET_ID, majorDimension='COLUMNS',range=self.quarter + '!C1:AA').execute()
+		#import pdb;pdb.set_trace()
 		today_column = self.get_today_column(attendance,date)
 		current_members = self.build_member_tuple()
-
+		
 		attendance_list = []
 		for (member, status) in zip(current_members,today_column[1:]):
 			if status == 'X':

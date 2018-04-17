@@ -6,7 +6,7 @@ from docx.enum.text import WD_LINE_SPACING
 from docx.enum.text import WD_BREAK
 from datetime import datetime
 from officer import Officer
-from quickstart import Attendance_API
+from attendance import Attendance_API
 document = Document()
 '''you can only modify font/font size/bold through a run'''
 
@@ -86,7 +86,7 @@ attendance_run.add_break(WD_BREAK.LINE)
 
 
 Attendance = Attendance_API()
-today_attendance = Attendance.get_today_attendance('03/11')
+today_attendance = Attendance.get_today_attendance()
 '''how to make text of each cell be times new roman?'''
 table = document.add_table(10,3)
 table.style = 'Table Grid'
@@ -97,7 +97,7 @@ for colIndex, col in enumerate(table.columns):
 		cell.text = text + '.'
 		aaa.append(cell)
 
-import pdb;pdb.set_trace()
+
 for (num, member) in zip(aaa, today_attendance):
 	num.text = num.text + ' ' + member[0] + ' ' + member[1]
 
@@ -139,8 +139,7 @@ for position in positions:
 	officer_list.append(Officer(document, position))
 	
 
-#import pdb; pdb.set_trace()
-print 'asdf'
 '''now begin actual reports'''
-document.save("asdf.docx")
+
+document.save(date.strftime('%Y.%m.%d') + '.docx')
 
