@@ -11,7 +11,7 @@ the current goals for this project are:
 - [ ] Have fun
 
 
-###ambitious goals
+### ambitious goals
 - [ ] Host SQL database of current members, officers and the members that hold them
 - [ ] Web scraper to scrape the portal for data listed above to update local SQL DB (in case of change in position)
 - [ ] create as an executable for next secretary to use
