@@ -44,7 +44,8 @@ header_run.add_break(WD_BREAK.LINE)
 
 date = datetime.now()
 '''month day, year'''
-date_string = 'Chapter Meeting Minutes - ' + date.strftime('%B %d, %Y')
+#not sure about %d and %-d
+date_string = 'Chapter Meeting Minutes - ' + date.strftime('%B %-d, %Y')
 
 date_run = header_paragraph.add_run()
 date_run.bold = True
@@ -82,7 +83,7 @@ attendance_run.add_break(WD_BREAK.LINE)
 
 
 Attendance = Attendance_API()
-today_attendance = Attendance.get_today_attendance('04/22')
+today_attendance = Attendance.get_today_attendance()
 table = document.add_table(10,3)
 table.style = 'Table Grid'
 table_cells = []
@@ -119,10 +120,10 @@ officer_title = Title(document, 'PRUDENTIAL REPORTS', font = 'Arial')
 #officers = get_officer_positions()
 
 officer_positions = [('Treasurer', 			'Dennis'),
-					('Recruitment Director','EAG'), 
+					('Recruitment Director','Brandy'), 
 					('Member Educator', 	'Gian'),
 					('Scholarship', 		'Angel'),
-					('Alumni Director', 	'EAG'),
+					('Alumni Director', 	'Alex'),
 					('Secretary', 			'Andrew F'),
 					('Marshal', 			'Brandy'),
 					('Sergeant-at-Arms', 	'Josh')]
@@ -136,14 +137,14 @@ for position in officer_positions:
 
 director_title = Title(document, 'DIRECTOR REPORTS', font = 'Arial')
 
-director_positions = [('Brotherhood Director', 		'EAG'),
+director_positions = [('Brotherhood Director', 		'Tony'),
 			('Social Director',				'Tony'), 
 			('Philanthropy Director', 		'EAG'),
 			('Athletics Director', 			'Luis'),
 			('Health & Safety', 			'Josh'),
 			('Housing Manager', 			'Max'),
 			('Wellness Director', 			'Andrew'),
-			('Community Service Director ', 'Josh'),
+			('Community Service Director', 'Josh'),
 			('Fundraising Director', 		'N/A'),
 			('Sunshine Director', 			'Josh')]
 

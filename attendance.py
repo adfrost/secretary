@@ -10,7 +10,6 @@ from SheetsClass import Spreadsheet
 
 class Attendance_API:
 
-
 	def __init__(self):
 		# Setup the Sheets API
 		SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
@@ -21,17 +20,15 @@ class Attendance_API:
 			creds = tools.run_flow(flow, store)
 		self.service = build('sheets', 'v4', http=creds.authorize(Http()))
 
-		#also need the sheetID, which relies on the current quarter
 		self.SPREADSHEET_ID = '1pi9vYiuaffClEK2TrIwg1N-HtcL4uU-S9nP8RcJ1IqM'
 		self.quarter = self.get_current_quarter()
 		
-		sheet_metadata = self.service.spreadsheets().get(spreadsheetId=self.SPREADSHEET_ID).execute()
+		sheet_metadata = self.service.spreadsheets().get(
+			spreadsheetId=self.SPREADSHEET_ID).execute()
 		
-		#sheets = sheet_metadata.get('sheets', '')
-		#title = sheets[0].get("properties", {}).get("title", "Sheet1")
-		#sheet_id = sheets[0].get("properties", {}).get("sheetId", 0)
-		self.API_response = self.service.spreadsheets().values().get(spreadsheetId=self.SPREADSHEET_ID, majorDimension='COLUMNS',range=self.quarter + '!A:AA').execute()
-		#self.API_current_members = self.service.spreadsheets().values().get(spreadsheetId=self.SPREADSHEET_ID, majorDimension='COLUMNS',range=self.quarter + '!A:B').execute()
+		self.API_response = self.service.spreadsheets().values().get(spreadsheetId=self.SPREADSHEET_ID, 
+			majorDimension='COLUMNS',range=self.quarter + '!A:AA').execute()
+
 		a = Spreadsheet(self.API_response)
 		
 
@@ -83,7 +80,7 @@ class Attendance_API:
 #optionally passing a date of type string in day/month zero padded format grabs it for that day
 	def get_today_attendance(self, date=None):
 
-	
+
 
 		today_column = self.get_today_column(self.API_response,date)
 		current_members = self.build_member_tuple()
