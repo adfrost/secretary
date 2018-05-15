@@ -6,6 +6,7 @@
 from docx.shared import Pt
 from docx import Document
 from docx.enum.text import WD_BREAK
+from datetime import datetime
 
 class Officer:
 
@@ -57,3 +58,24 @@ class Title:
 
 		self.p.paragraph_format.space_before = Pt(0)
 		self.p.paragraph_format.space_after = Pt(0)
+
+
+'''not sure where this should go since other files now use it besides attendance.py'''
+'''
+	takes in datetime object
+'''
+def get_quarter(date=None):
+	if not date:
+		date = datetime.now()
+	quarter = ''
+	if date.month >= 9:
+		quarter = 'Fall '
+	elif date.month <= 3:
+		quarter = 'Winter '
+	elif 4 <= date.month <= 7:
+		quarter = 'Spring '
+	else:
+		print('error, current date is in summer')
+		quarter = 'ERROR '
+
+	return quarter + str(date.year)
