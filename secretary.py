@@ -8,13 +8,14 @@ from datetime import datetime
 from officer import Officer
 from officer import Title
 from attendance import Attendance_API
-
+from db import DB
 
 class Meeting_generator:
 
 
 	def __init__(self,path_to_folder, meeting_date=datetime.now()):
 		document = Document()
+		db = DB()
 		'''you can only modify font/font size/bold through a run'''
 
 		document.styles['Normal'].font.name = 'Times New Roman'
@@ -122,41 +123,21 @@ class Meeting_generator:
 		'''
 		officer_title = Title(document, 'PRUDENTIAL REPORTS', font = 'Arial')
 
-		#officers = get_officer_positions()
-
-		officer_positions = [('Treasurer', 			'Dennis'),
-							('Recruitment Director','Brandy'), 
-							('Member Educator', 	'Gian'),
-							('Scholarship', 		'Angel'),
-							('Alumni Director', 	'Alex'),
-							('Secretary', 			'Andrew F'),
-							('Marshal', 			'Brandy'),
-							('Sergeant-at-Arms', 	'Josh')]
-
+		officer_response = db.get_officers()
+		
 		officer_list = []
-		for position in officer_positions:
-			officer_list.append(Officer(document, position))
+		for officer in officer_response:
+			officer_list.append(Officer(document, officer))
 			
 
 		'''now begin actual reports'''
 
 		director_title = Title(document, 'DIRECTOR REPORTS', font = 'Arial')
 
-		director_positions = [('Brotherhood Director', 		'Tony'),
-					('Social Director',				'Tony'), 
-					('Philanthropy Director', 		'EAG'),
-					('Athletics Director', 			'Luis'),
-					('Health & Safety', 			'Josh'),
-					('Housing Manager', 			'Max'),
-					('Wellness Director', 			'Andrew'),
-					('Community Service Director', 'Josh'),
-					('Fundraising Director', 		'N/A'),
-					('Sunshine Director', 			'Josh')]
-
+		director_response = db.get_directors()
 		director_list = []
-		for position in director_positions:
-			
-			director_list.append(Officer(document, position))
+		for director in director_response:
+			director_list.append(Officer(document, director))
 
 		VP_title = Title(document, 'VICE PRESIDENT\'S REPORT', font = 'Arial', bold = True, underline = True)
 		vp = Officer(document,('Vice President', 'Max'))

@@ -4,8 +4,6 @@ from officer import get_quarter
 from datetime import datetime
 import sys
 import os
-
-
 '''
 	- if first keyword is 'make', the program creates a word document from 
 		secretary.py and opens it
@@ -21,13 +19,8 @@ import os
 	- if no word document exists for today, this will create a document with today's date, 
 	and with attendance info for today from the google sheets API
 
-	== is value equality operator, while 'is' is reference equality (if it points to the same object)
+	- Personal note: == is value equality operator, while 'is' is reference equality (if it points to the same object)
 
-'''
-
-
-
-'''
 	- sys.argv[2] is a string following the format YYYY.MM.DD
 	- meeting_date is a datetime object to be used in secretary/meeting_generator file
 	- if a date is passed into sys.argv[2] it should be used as file_name, but if 'today' is passed in 
@@ -35,25 +28,16 @@ import os
 	program expects
 '''
 
-
-#this just checks if its in YYYY.MM.DD format so i don't have to do it with regex
-'''
-	if the date is in another quarter, directory changes
-	if it is 'today', it doesn't
-	if sys.argv[2] == 'today' then try block wouldn't work
-'''
-
 path_to_folder = ''
-file_name = sys.argv[2]
-
 if sys.argv[1] == 'make':
-
+	file_name = sys.argv[2]
 	if sys.argv[2] == 'today':
+
 		meeting_date = datetime.now()
+		path_to_folder += get_quarter(meeting_date) + '/'
 		#change file_name, as it was previously == sys.argv[2], which was 'today', which isn't valid file name
 		file_name = meeting_date.strftime('%Y.%m.%d')
-		path_to_folder += get_quarter(meeting_date) + '/'
-
+		
 		#if file does not exist, create it. if file does, skip creation step and open it instead
 		if not os.path.isfile(path_to_folder + file_name):
 			meeting_generator = Meeting_generator(path_to_folder, meeting_date)
