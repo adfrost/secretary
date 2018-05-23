@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 from secretary import Meeting_generator
 import subprocess
-from officer import get_quarter
+from officer import get_quarter, get_file_path
 from datetime import datetime
 import sys
 import os
@@ -28,31 +29,41 @@ import os
 	program expects
 '''
 
-path_to_folder = ''
+path_to_file = ''
+path_to_chapter = 'Chapter/'
+path_to_prudential = 'Prudential/'
+
 if sys.argv[1] == 'make':
-	file_name = sys.argv[2]
+
 	if sys.argv[2] == 'today':
+		print 'make one for today'
+
+		path_to_file += get_file_path()
 
 		meeting_date = datetime.now()
-		path_to_folder += get_quarter(meeting_date) + '/'
-		#change file_name, as it was previously == sys.argv[2], which was 'today', which isn't valid file name
-		file_name = meeting_date.strftime('%Y.%m.%d')
 		
 		#if file does not exist, create it. if file does, skip creation step and open it instead
-		if not os.path.isfile(path_to_folder + file_name):
-			meeting_generator = Meeting_generator(path_to_folder, meeting_date)
+		if not os.path.isfile(path_to_file):
+			meeting_generator = Meeting_generator(path_to_file, meeting_date)
 		else:
 			print 'there is already a file created for today, opening it now...'
 
 	else:
+		file_name = sys.argv[2]
 		#this just checks if its in YYYY.MM.DD format so i don't have to do it with regex
 		#and updates path_to_file
 		try: 
 			meeting_date = datetime.strptime(sys.argv[2], '%Y.%m.%d')	
-			path_to_folder += get_quarter(meeting_date) + '/'
+			path_to_file += get_file_path(meeting_date)
 		except ValueError:
 			print sys.argv[2], ' is not in the format \'YYYY.MM.DD\' (ex: 2018.04.20)'
 			sys.exit(1)
 		print 'there is already a file created for', file_name, 'opening it now...'
 
-	process = subprocess.Popen(['open', path_to_folder + file_name + '.docx'])
+	process = subprocess.Popen(['open', path_to_file + file_name + '.docx'])
+
+else:
+	print """
+		argument \'make\' has to follow \'python main.py\'\n',
+		this is where other functionality besides making the documentwould be implemented
+		"""

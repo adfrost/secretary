@@ -5,7 +5,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.text import WD_LINE_SPACING
 from docx.enum.text import WD_BREAK
 from datetime import datetime
-from officer import Officer
+from officer import Position
 from officer import Title
 from attendance import Attendance_API
 from db import DB
@@ -51,6 +51,7 @@ class Meeting_generator:
 
 		'''MM DD, YYYY'''
 		#not sure about %d and %-d
+		#"Prudential meeting minutes" for prudential
 		date_string = 'Chapter Meeting Minutes - ' + meeting_date.strftime('%B %-d, %Y')
 
 		date_run = header_paragraph.add_run()
@@ -89,7 +90,10 @@ class Meeting_generator:
 
 
 		Attendance = Attendance_API()
-		today_attendance = Attendance.get_attendance('05/22')
+
+		#box says "PRUDENTIAL BOARD" for 10 cells of 2 rows
+		#hen same but "OPEN MEMBERS"
+		today_attendance = Attendance.get_attendance()
 		table = document.add_table(10,3)
 		table.style = 'Table Grid'
 		table_cells = []
@@ -121,29 +125,33 @@ class Meeting_generator:
 		prudential_underline.underline = True
 		#prudential_underline.add_break(WD_BREAK.LINE)
 		'''
-		officer_title = Title(document, 'PRUDENTIAL REPORTS', font = 'Arial')
+
+		#prudentiaL: OPEN MEMBER FORUM
+		officer_title = Title(document, 'PRUDENTIAL REPORTS', font = 'Arial', bold = True, underline = True)
 
 		officer_response = db.get_officers()
 		
 		officer_list = []
 		for officer in officer_response:
-			officer_list.append(Officer(document, officer))
+			officer_list.append(Position(document, officer))
 			
 
 		'''now begin actual reports'''
 
-		director_title = Title(document, 'DIRECTOR REPORTS', font = 'Arial')
+		director_title = Title(document, 'DIRECTOR REPORTS', font = 'Arial', bold = True, underline = True)
 
 		director_response = db.get_directors()
 		director_list = []
 		for director in director_response:
-			director_list.append(Officer(document, director))
+			director_list.append(Position(document, director))
 
+
+		#prudential has this too
 		VP_title = Title(document, 'VICE PRESIDENT\'S REPORT', font = 'Arial', bold = True, underline = True)
-		vp = Officer(document,('Vice President', 'Max'))
+		vp = Position(document,('Vice President', 'Max'))
 
 		president_title = Title(document, 'PRESIDENT\'S REPORT', font = 'Arial', bold = True, underline = True)
-		vp = Officer(document,('President', 'Alex'))
+		vp = Position(document,('President', 'Alex'))
 
 		old_biz = 	Title(document, string = 'OLD BUSINESS', font = 'Arial', 	bold = True, underline = True)
 		new_biz = 	Title(document, string = 'NEW BUSINESS', font = 'Arial', 	bold = True, underline = True)

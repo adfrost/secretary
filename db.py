@@ -32,6 +32,7 @@ class Director(Base):
 		return "<Director(id='%s', position='%s')>" % (
 			self.id, self.position)
 
+
 '''
 	Note: user variable was causing sqlalchemy.exc.InvalidRequestError 
 	when back_populates parameter was 'officers', the name of the table.
@@ -54,7 +55,8 @@ class Officer(Base):
 class DB:
 	def __init__(self):
 
-		self.db = create_engine('sqlite:///testdb.db', echo=False)
+
+		self.db = create_engine('sqlite:///testdb.db', echo=True)
 		Base.metadata.create_all(self.db)
 		
 		try:
@@ -65,22 +67,49 @@ class DB:
 		except:
 			print 'something didnt work :( \n\n\n'
 		
+		officer_dict = {
+			'treasurer': 		'Treasurer',
+			'recruitment_dir':	'Recruitment Director',
+			'nember_ed': 		'Member Educator',
+			'scholarship_dir': 	'Scholarship',
+			'alumni_dir': 		'Alumni Director',
+			'secretary': 		'Secretary',
+			'marshal': 			'Marshal',
+			'sergeant': 		'Sergeant-at-Arms',
+		}
 
-		#adds new fields to the tables every time,
-		#should make it only add if no data is present or update
-		#self.populate_tables()	
+		director_dict = {
+			'brotherhood_dir': 	'Brotherhood Director',
+			'social_dir': 		'Social Director',
+			'philo_dir': 		'Philanthropy Director',
+			'athletics_dir':	'Athletics Director',
+			'health_safety': 	'Health & Safety',
+			'housing_manager':	'Housing Manager' ,
+			'wellness_dir':		'Wellness Director',
+			'communitiy_dir':	'Community Service Director',
+			'fundraising_dir':	'Fundraising Director',
+			'sunshine_dir':		'Sunshine Director',
+		}
 
+		'''
+			want these to be separate from the officer/director minutes section
+			should these be in separate tables? seems inefficient to have 2 tables 
+			with only one entry in each
+		'''
+		president = {'president': 'President',}
+		vice_president = {'vice_president':	'Vice President',}
+		
 	def populate_officers(self):
-		self.a = Officer(position='Treasurer')
-		self.b = Officer(position='Recruitment Director')
-		self.c = Officer(position='Member Educator')
-		self.d = Officer(position='Scholarship')
-		self.e = Officer(position='Alumni Director')
-		self.f = Officer(position='Secretary')
-		self.g = Officer(position='Marshal')
-		self.h = Officer(position='Sergeant-at-Arms')
-		self.i = Officer(position='President')
-		self.j = Officer(position='Vice President')
+		self.treasurer = Officer(position='Treasurer')
+		self.recruitment_dir = Officer(position='Recruitment Director')
+		self.nember_ed = Officer(position='Member Educator')
+		self.scholarship_dir = Officer(position='Scholarship')
+		self.alumni_dir = Officer(position='Alumni Director')
+		self.secretary = Officer(position='Secretary')
+		self.marshal = Officer(position='Marshal')
+		self.sergeant = Officer(position='Sergeant-at-Arms')
+		self.president = Officer(position='President')
+		self.vice_president = Officer(position='Vice President')
 		
 	def populate_directors(self):
 		self.aa = Director(position='Brotherhood Director')
@@ -94,9 +123,10 @@ class DB:
 		self.ii = Director(position='Fundraising Director')
 		self.jj = Director(position='Sunshine Director')
 
+
 	def populate_tables(self):
-		self.populate_directors()
-		self.populate_officers()
+		
+
 
 		self.session.add_all([
 			User(name = '', officer=[], director=[]),
@@ -115,7 +145,32 @@ class DB:
 		return [(director.position, director.user.name ) for  director in query]
 
 
-	
+	#set foreign key for a position and a user to nothing?
+	#position is a string of the full, official title of the position
+	#would make it a lot easier to find objects if i made 'position' a Officer/Director object
+	def remove_link(self,position,name):
+		
+		usr = self.session.query(User).filter_by(name=name).all()[0]
+		import ipdb;ipdb.set_trace()
 
+
+		if position in officer_dict:
+			query = self.session.query(Officer).filter_by(position=position).all() #should only ever be unique entries
+		elif position in dir_dict:
+			query = self.session.query(Director).filter_by(position=position).all() #should only ever be unique entries
+		else:
+			print 'ERROR THAT ISNT AN OFFICER OR DIRECTOR POSITION'
+
+		if len(query) > 1:
+			print 'ERROR THERE ARE 2 ENTRIES FOR THE SAME POSITION'
+			exit(1)
+
+		#correct way to unlink foreign key?
+		query[0].user = None
+		print 'successfully unlinked'
+
+
+
+ayy = DB()
 		
 	

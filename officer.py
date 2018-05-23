@@ -8,7 +8,7 @@ from docx import Document
 from docx.enum.text import WD_BREAK
 from datetime import datetime
 
-class Officer:
+class Position:
 
 	def __init__(self, document, position):
 
@@ -38,7 +38,7 @@ class Officer:
 	and optional font. Title class adds a one line break before and one
 	after the text
 
-
+ oh look its Dennis
 '''
 
 class Title:
@@ -79,3 +79,38 @@ def get_quarter(date=None):
 		quarter = 'ERROR '
 
 	return quarter + str(date.year)
+
+
+#summer counts as the previous year right?
+def get_academic_year(date=None):
+	if not date:
+		date = datetime.now()
+	quarter = ''
+	if date.month < 9:
+		quarter += str(date.year - 1) + '-' + str(date.year)
+	else:
+		quarter += str(date.year) + '-' + str(date.year + 1)
+		
+	return quarter
+
+#should return either '[Chapter|Prudential]/'[academic year]''
+#if date is Nonetype, function is called in the 'today' condition
+# ex: returns "Chapter/2017-2018/2018.04.20"
+def get_file_path(date=None):
+	if not date:
+		date = datetime.now()
+
+	path_to_file = ''
+	
+	if(date.weekday() == 6):	#meetings are traditionally held on sundays
+		path_to_file += 'Chapter/'
+	else:
+		path_to_file += 'Prudential/'
+
+	path_to_file += get_academic_year(date) + '/'
+	if not date:			
+		path_to_file += date.strftime('%Y.%m.%d')
+	
+
+	return path_to_file
+
